@@ -240,6 +240,7 @@ class AuthController extends Controller
             /** @var User $user */
             $user = User::query()
                 ->whereKey((int)$data['user_id'])
+                ->with('role')
                 ->where('auth_step', '=', 'phone')
                 ->first();
 
@@ -249,14 +250,16 @@ class AuthController extends Controller
 
             if ($data['login'] === $user->getLogin() && Hash::check($data['password'], $user->getPassword())) {
                 $user->fill(['auth_step' => 'login'])->save();
-                $token = $user->createToken('auth')->plainTextToken;
+
+                $role = $user->role->getName();
+                $token = $user->createToken('auth', ["role:$role"])->plainTextToken;
             } else {
                 throw new RuntimeException('Credentials does not match', 404);
             }
 
             return $this->render_json(
                 [
-                    'token' => $token
+                    'token' => $token,
                 ],
                 'Successfully logged in!');
         } catch (Exception $exception) {
@@ -287,6 +290,7 @@ class AuthController extends Controller
             /** @var User $user */
             $user = User::query()
                 ->whereKey((int)$data['user_id'])
+                ->with('role')
                 ->where('auth_step', '=', 'phone')
                 ->first();
 
@@ -302,7 +306,9 @@ class AuthController extends Controller
                 ]
             );
 
-            $token = $user->createToken('auth')->plainTextToken;
+            $role = $user->role->getName();
+
+            $token = $user->createToken('auth', ["role:$role"])->plainTextToken;
 
             return $this->render_json(
                 [

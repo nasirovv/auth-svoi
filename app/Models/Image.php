@@ -26,6 +26,22 @@ class Image extends Model
     ];
 
     /**
+     * @return string
+     */
+    public function getUrl(): string
+    {
+        return url($this->getFullPath());
+    }
+
+    /**
+     * @return string
+     */
+    public function getFullPath(): string
+    {
+        return $this->path . $this->name . "." . $this->extension;
+    }
+
+    /**
      * @return int
      */
     public function getId(): int

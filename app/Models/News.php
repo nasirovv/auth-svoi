@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * Class News
@@ -15,6 +16,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property string  $description
  * @property string  $full_text
  * @property boolean $status
+ *
+ * @property Image   $image
  */
 class News extends Model
 {
@@ -28,6 +31,14 @@ class News extends Model
         'full_text',
         'status'
     ];
+
+    /**
+     * @return HasOne
+     */
+    public function image(): HasOne
+    {
+        return $this->hasOne(Image::class, 'id', 'image_id');
+    }
 
     /**
      * @return int
