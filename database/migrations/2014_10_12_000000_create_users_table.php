@@ -15,11 +15,11 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('role_id')->index();
 
-            $table->string('name');
             $table->string('telephone_number')->unique();
-            $table->string('email')->unique();
-            $table->string('password');
+            $table->string('login')->nullable();
+            $table->string('password')->nullable();
             $table->enum('status', ['active', 'block']);
+            $table->enum('auth_step', ['phone', 'login']);
 
             $table->foreign('role_id')->references('id')->on('roles');
 
