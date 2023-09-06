@@ -29,13 +29,17 @@ use RuntimeException;
  */
 class NewsController extends Controller
 {
-    public function list()
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function list(Request $request): JsonResponse
     {
         $message = null;
         $code = 200;
 
         try {
-            $list = NewsService::getInstance()->getList();
+            $list = NewsService::getInstance()->getList($request->user()->role->getName());
 
             return $this->render_json(new NewsCollection($list), 'Success');
         } catch (Exception $exception) {
@@ -56,7 +60,7 @@ class NewsController extends Controller
         $code = 200;
 
         try {
-            $news = NewsService::getInstance()->getById((int)$request->query('id'));
+            $news = NewsService::getInstance()->getById((int)$request->query('id'), $request->user()->role->getName());
 
             if ($news === null) {
                 throw new RuntimeException('News not found', 404);
@@ -169,7 +173,7 @@ class NewsController extends Controller
             $data = $validator->getData();
 
             /** @var News|null $news */
-            $news = NewsService::getInstance()->getById((int)$request->query('id'));
+            $news = NewsService::getInstance()->getById((int)$request->query('id'), $request->user()->role->getName());
 
             if ($news === null) {
                 throw new RuntimeException('News not found', 404);
@@ -197,7 +201,7 @@ class NewsController extends Controller
 
             DB::commit();
 
-            return $this->render_json([], 'Successfully added');
+            return $this->render_json([], 'Successfully updated');
         } catch (Exception $exception) {
             DB::rollBack();
             $message = $exception->getMessage();
@@ -216,7 +220,7 @@ class NewsController extends Controller
             DB::beginTransaction();
 
             /** @var News $news */
-            $news = NewsService::getInstance()->getById((int)$request->query('id'));
+            $news = NewsService::getInstance()->getById((int)$request->query('id'), $request->user()->role->getName());
 
             if ($news === null) {
                 throw new RuntimeException('News not found', 404);

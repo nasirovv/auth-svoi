@@ -28,24 +28,31 @@ class NewsService
         return new static();
     }
 
-    public function getList(): Collection
+    public function getList(string $role): Collection
     {
-        return News::query()
-            ->where('status', '=', 1)
-            ->get();
+        $builder = News::query()->with('image');
+
+        if (!in_array($role, ['admin', 'moderator'])) {
+            $builder->where('status', '=', 1);
+        }
+
+        return $builder->get();
     }
 
     /**
-     * @param int $id
+     * @param int    $id
+     * @param string $role
      * @return Builder|Model|object|null
      */
-    public function getById(int $id)
+    public function getById(int $id, string $role)
     {
-        return News::query()
-            ->whereKey($id)
-            ->with('image')
-            ->where('status', '=', 1)
-            ->first();
+        $builder = News::query()->whereKey($id)->with('image');
+
+        if (!in_array($role, ['admin', 'moderator'])) {
+            $builder->where('status', '=', 1);
+        }
+
+        return $builder->first();
     }
 
     /**

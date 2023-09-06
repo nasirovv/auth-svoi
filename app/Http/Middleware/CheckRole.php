@@ -8,13 +8,17 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\User;
 use Closure;
 
 class CheckRole
 {
     public function handle($request, Closure $next)
     {
-        if ($request->user()->tokenCan('role:admin') || $request->user()->tokenCan('role:moderator')) {
+        /** @var User $user */
+        $user = $request->user();
+
+        if (in_array($user->role->getName(), ['moderator', 'admin'])) {
             return $next($request);
         }
 
